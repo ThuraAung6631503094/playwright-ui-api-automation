@@ -49,6 +49,17 @@ Tests cover CRUD operations, saved-state verification, invalid inputs, boundary 
 
 The local API uses in-memory storage, which resets when the server restarts.
 
+## QA Test Documentation
+
+The following documents describe the project's test strategy,
+scope, test scenarios, and expected results.
+
+- [Automation Test Plan](docs/test-plan.md)
+- [Test Case Matrix](docs/test-case-matrix.md)
+
+These documents provide traceable evidence of test design
+and planning alongside the automated test implementations.
+
 ## Test Coverage
 
 | Test category | Project test cases |
