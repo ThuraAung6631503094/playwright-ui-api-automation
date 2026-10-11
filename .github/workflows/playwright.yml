@@ -1,0 +1,59 @@
+
+name: QA Automation Tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  playwright:
+    name: ${{ matrix.browser }} Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Run automation tests
+        run: |
+          if [ "${{ matrix.browser }}" = "chromium" ]; then
+            npx playwright test --project=chromium
+          else
+            npx playwright test tests/todo.spec.ts --project=${{ matrix.browser }}
+          fi
+
+      - name: Upload test reports and evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: qa-results-${{ matrix.browser }}
+          path: |
+            playwright-report/
+            reports/
+            test-results/
+          retention-days: 7
+          if-no-files-found: warn
